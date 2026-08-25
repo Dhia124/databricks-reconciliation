@@ -15,6 +15,33 @@ Chaque euro d'écart non expliqué entre les deux est un euro potentiellement ma
 Le rapprochement se fait souvent à la main, sous Excel, par la personne qui gère le
 produit. Ce pipeline l'automatise et rend l'écart mesurable jour après jour.
 
+## Réalisations
+
+- Construction d'un pipeline médaillon complet, de l'ingestion brute jusqu'à une
+  synthèse quotidienne directement exploitable par le métier.
+- Ingestion incrémentale et idempotente : les checkpoints Auto Loader empêchent la
+  réingestion des fichiers déjà traités.
+- Mise en place de cinq règles de qualité déclaratives, avec quarantaine des lignes
+  rejetées et conservation de leur motif.
+- Déduplication déterministe par clé métier en conservant la dernière extraction connue.
+- Réconciliation exhaustive par `FULL OUTER JOIN`, avec cinq statuts et un double seuil
+  de tolérance paramétrable.
+- Contrôle automatique de bout en bout garantissant qu'aucune clé métier ne disparaît
+  entre les couches silver et gold.
+
+## Technologies utilisées
+
+| Technologie | Utilisation dans le projet |
+|---|---|
+| **Databricks** | Exécution des notebooks et environnement de développement |
+| **Python** | Génération des données synthétiques et paramétrage du pipeline |
+| **PySpark** | Typage, nettoyage, déduplication, contrôles qualité et réconciliation |
+| **Spark Structured Streaming / Auto Loader** | Ingestion incrémentale des fichiers JSON avec checkpoints |
+| **Delta Lake** | Stockage transactionnel des tables bronze, silver et gold |
+| **Spark SQL** | Contrôles, agrégations et synthèse quotidienne |
+| **Unity Catalog** | Gouvernance du catalogue, des schémas, volumes et tables |
+| **Databricks Asset Bundles** | Configuration reproductible du projet via `databricks.yml` |
+
 ## Architecture
 
 | Couche | Table | Rôle |
@@ -81,4 +108,6 @@ saisie d'un facteur 10, valeurs négatives. Aucune donnée réelle n'est utilis�
 - Tableau de bord Databricks SQL ou Power BI branché sur `gold_synthese_quotidienne`
 - Réécriture de la couche silver en Delta Live Tables avec `expect_or_drop`
 - Historisation des écarts, pour suivre la dérive dans le temps plutôt qu'à un instant t
+## Trophées GitHub
+
 [![trophy](https://trophy.ryglcloud.net/?username=Dhia124)](https://github.com/ryo-ma/github-profile-trophy)

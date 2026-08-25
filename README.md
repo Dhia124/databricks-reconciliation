@@ -81,3 +81,5 @@ saisie d'un facteur 10, valeurs négatives. Aucune donnée réelle n'est utilis�
 - Tableau de bord Databricks SQL ou Power BI branché sur `gold_synthese_quotidienne`
 - Réécriture de la couche silver en Delta Live Tables avec `expect_or_drop`
 - Historisation des écarts, pour suivre la dérive dans le temps plutôt qu'à un instant t
+
+  [![trophy](https://github-profile-trophy.vercel.app/?username=Dhia124)](https://github.com/ryo-ma/github-profile-trophy)

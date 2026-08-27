@@ -1,2 +1,12 @@
 
 .databricks
+
+# --- Airflow ---
+logs/
+.env
+__pycache__/
+*.pyc
+airflow.db
+airflow.cfg
+webserver_config.py
+standalone_admin_password.txt

@@ -1,0 +1,20 @@
+# Airflow en une commande : docker compose up
+# L'interface est ensuite sur http://localhost:8080 (identifiants affichés dans les logs).
+services:
+  airflow:
+    image: apache/airflow:2.10.5-python3.11
+    command: standalone
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DEFAULT_TIMEZONE: Europe/Paris
+      _PIP_ADDITIONAL_REQUIREMENTS: apache-airflow-providers-databricks==6.13.0
+      # simulation : le graphe s'exécute sans workspace Databricks
+      # databricks : chaque tâche lance réellement le notebook correspondant
+      MODE_EXECUTION: ${MODE_EXECUTION:-simulation}
+      DATABRICKS_NOTEBOOK_PREFIX: ${DATABRICKS_NOTEBOOK_PREFIX:-/Workspace/Users/moi/reconciliation}
+      DATABRICKS_CLUSTER_ID: ${DATABRICKS_CLUSTER_ID:-}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs

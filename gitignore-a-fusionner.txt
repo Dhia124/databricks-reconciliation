@@ -1,0 +1,12 @@
+# À ajouter à la fin de votre .gitignore existant.
+# Si le fichier n'existe pas encore, renommez celui-ci en .gitignore
+
+# --- Airflow ---
+logs/
+.env
+__pycache__/
+*.pyc
+airflow.db
+airflow.cfg
+webserver_config.py
+standalone_admin_password.txt

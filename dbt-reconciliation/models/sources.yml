@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: reconciliation
+    description: >
+      Couche silver produite par les notebooks PySpark du pipeline.
+      dbt s'arrête à la frontière de l'ingestion : bronze et silver restent
+      en PySpark (Auto Loader, gestion des rejets), gold passe en SQL.
+    catalog: workspace
+    schema: reconciliation
+    tables:
+      - name: silver_diffusion
+        description: >
+          Diffusions publicitaires normalisées, une ligne par clé métier et par source.
+          Deux sources cohabitent dans la table : 'adserver' et 'facturation'.
+        columns:
+          - name: campagne_id
+            tests: [not_null]
+          - name: placement_id
+            tests: [not_null]
+          - name: date_diffusion
+            tests: [not_null]
+          - name: source
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['adserver', 'facturation']

@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: gold_reconciliation
+    description: >
+      Une ligne par clé métier (campagne, placement, jour), avec les deux sources
+      côte à côte, l'écart chiffré et son statut. C'est la table que le métier
+      ouvre quand il veut comprendre un écart précis.
+    tests:
+      # La clé métier doit être unique : deux lignes pour la même clé signifieraient
+      # une duplication en amont, et fausseraient tous les totaux.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - campagne_id
+              - placement_id
+              - date_diffusion
+    columns:
+      - name: campagne_id
+        description: Identifiant de la campagne, présent des deux côtés.
+        tests: [not_null]
+      - name: placement_id
+        tests: [not_null]
+      - name: date_diffusion
+        tests: [not_null]
+      - name: statut
+        description: >
+          Qualification de la ligne. ABSENT_* signale une ligne vue d'un seul côté,
+          ECART_SIGNIFICATIF un écart franchissant les deux seuils, ECART_TOLERE un
+          écart d'arrondi ou de consolidation, CONFORME une ligne alignée.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - CONFORME
+                  - ECART_TOLERE
+                  - ECART_SIGNIFICATIF
+                  - ABSENT_ADSERVER
+                  - ABSENT_FACTURATION
+      - name: ecart_ca_eur
+        description: Facturation moins adserver, en euros. Négatif = sous-facturation.
+      - name: ecart_ca_pct
+        description: Écart rapporté au CA adserver, dénominateur protégé à 0,01 €.
+
+  - name: gold_synthese_quotidienne
+    description: >
+      Agrégat par jour alimentant le tableau de bord. La colonne ca_a_expliquer_eur
+      est l'indicateur suivi par le métier.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [date_diffusion]
+    columns:
+      - name: date_diffusion
+        tests: [not_null]
+      - name: lignes
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                inclusive: true
+      - name: ca_a_expliquer_eur
+        description: >
+          Somme des écarts absolus sur les lignes non conformes. C'est le montant
+          qu'il faut justifier, pas l'écart net — deux erreurs de sens opposé ne
+          se compensent pas dans la réalité comptable.
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true

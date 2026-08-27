@@ -1,0 +1,14 @@
+# À copier dans ~/.dbt/profiles.yml puis à compléter.
+# Ne jamais versionner le fichier rempli : il contient un token.
+
+reconciliation:
+  target: dev
+  outputs:
+    dev:
+      type: databricks
+      catalog: workspace          # Unity Catalog
+      schema: reconciliation
+      host: "{{ env_var('DATABRICKS_HOST') }}"            # adb-xxxx... sans https://
+      http_path: "{{ env_var('DATABRICKS_HTTP_PATH') }}"  # SQL Warehouse > Connection details
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      threads: 4

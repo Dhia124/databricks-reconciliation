@@ -1,0 +1,26 @@
+name: 'reconciliation'
+version: '1.0.0'
+config-version: 2
+
+profile: 'reconciliation'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+# Les seuils métier étaient des widgets Databricks dans le notebook.
+# Ici ce sont des variables versionnées : la règle de gestion vit dans Git,
+# plus dans un champ de formulaire que personne ne retrouve six mois après.
+vars:
+  seuil_ca_pct: 2.0
+  seuil_ca_abs_eur: 50.0
+
+models:
+  reconciliation:
+    staging:
+      +materialized: view
+    gold:
+      +materialized: table
